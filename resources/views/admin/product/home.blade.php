@@ -19,7 +19,40 @@
                             {{ Session::get('success') }}
                         </div>
                     @endif
-                    table content
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($products as $product)
+                                <tr>
+                                    <td class="align-middle">{{ $loop->iteration }}</td>
+                                    <td class="align-middle">{{ $product->title }}</td>
+                                    <td class="align-middle">{{ $product->category }}</td>
+                                    <td class="align-middle">{{ $product->price }}</td>
+                                    <td class="align-middle">
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <a href="{{ route('admin/products/edit', ['id' => $product->id]) }}"
+                                                type="button" class="btn btn-secondary">Edit</a>
+                                            <a href=" {{ route('admin/products/delete', ['id' => $product->id]) }}"
+                                                type="button" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            @empty
+                                <tr>
+                                    <td class="text-center" colspan="5">Product not Found</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
 
             </div>
