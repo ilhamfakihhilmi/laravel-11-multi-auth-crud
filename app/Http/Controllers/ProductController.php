@@ -11,7 +11,14 @@ class ProductController extends Controller
     {
         $products = Product::orderBy('id', 'desc')->get();
         $total = Product::count();
-        return view('admin.product.home', compact(['products', 'total']));
+        return view("admin.product.home", compact(['products', 'total']));
+    }
+
+    public function dashboard()
+    {
+        $products = Product::orderBy('id', 'desc')->get();
+        $total = Product::count();
+        return view("dashboard", compact(['products', 'total']));
     }
 
     public function create()
