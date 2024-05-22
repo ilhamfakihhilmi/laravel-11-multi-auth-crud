@@ -45,6 +45,11 @@
                             </div>
                         </div>
 
+                         <div>
+                            <input type='file' id="imageUpload" name="image" accept=".png, .jpg, .jpeg" onchange="previewImage(this)" />
+                            <label for="imageUpload"></label>
+                        </div>
+
                         <div class="row">
                             <div class="d-grid">
                                 <button class="btn btn-primary">Submit</button>

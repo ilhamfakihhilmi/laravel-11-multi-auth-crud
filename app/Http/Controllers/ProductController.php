@@ -28,20 +28,34 @@ class ProductController extends Controller
 
     public function save(Request $request)
     {
-        $validation = $request->validate([
+        $request->validate([
             'title' => 'required',
             'category' => 'required',
             'price' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        $data = Product::create($validation);
-        if ($data) {
-            session()->flash('success', 'Product Add Successfully');
+
+        $imageName = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('images'), $imageName);
+
+        $product = new Product();
+        $product->title = $request->title;
+        $product->category = $request->category;
+        $product->price = $request->price;
+        $product->image = 'images/' . $imageName;
+        $product->save();
+
+        if ($product) {
+            session()->flash('success', 'Product Added Successfully');
             return redirect(route('admin/products'));
         } else {
-            session()->flash('error', 'Some Problem occure');
-            return redirect(route('admin.products/create'));
+            session()->flash('error', 'Some Problem Occurred');
+            return redirect(route('admin/products/create'));
         }
     }
+
+
+
     public function edit($id)
     {
         $products = Product::findOrFail($id);
@@ -60,23 +74,61 @@ class ProductController extends Controller
         }
     }
 
+//     public function update(Request $request, $id)
+//     {
+//         $request->validate([
+//             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+//         ]);
+//         $products = Product::findOrFail($id);
+//         $title = $request->title;
+//         $category = $request->category;
+//         $price = $request->price;
+//         $image = $request->image;
+
+//         $products->title = $title;
+//         $products->category = $category;
+//         $products->price = $price;
+//         $products->image = '/products' . $image;
+
+//         $data = $products->save();
+//         if ($data) {
+//             session()->flash('success', 'Product Update Successfully');
+//             return redirect(route('admin/products'));
+//         } else {
+//             session()->flash('error', 'Some problem occure');
+//             return redirect(route('admin/products/update'));
+//         }
+//     }
+// }
+
     public function update(Request $request, $id)
     {
-        $products = Product::findOrFail($id);
-        $title = $request->title;
-        $category = $request->category;
-        $price = $request->price;
+        $request->validate([
+            'title' => 'required',
+            'category' => 'required',
+            'price' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-        $products->title = $title;
-        $products->category = $category;
-        $products->price = $price;
-        $data = $products->save();
+        $product = Product::findOrFail($id);
+        $product->title = $request->title;
+        $product->category = $request->category;
+        $product->price = $request->price;
+
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('images'), $imageName);
+            $product->image = 'images/' . $imageName;
+        }
+
+        $data = $product->save();
+
         if ($data) {
-            session()->flash('success', 'Product Update Successfully');
+            session()->flash('success', 'Product Updated Successfully');
             return redirect(route('admin/products'));
         } else {
-            session()->flash('error', 'Some problem occure');
-            return redirect(route('admin/products/update'));
+            session()->flash('error', 'Some problem occurred');
+            return redirect(route('admin/products/edit', ['id' => $id]));
         }
     }
 }
